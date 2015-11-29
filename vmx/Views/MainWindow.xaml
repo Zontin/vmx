@@ -1,0 +1,119 @@
+﻿<Window x:Class="vmx.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:vmx"
+        mc:Ignorable="d"
+        xmlns:vm="clr-namespace:vmx.ViewModels"
+        Title="Пример слияния версий" Height="350" Width="650">
+    
+    <Window.Resources>
+        
+        <vm:MainWindowModel x:Key="viewModel"/>
+
+        <Style x:Key="TextBlocks">
+            <Setter Property="Block.FontSize" Value="14pt"/>
+            <Setter Property="FrameworkElement.Margin" Value="2,2"/>
+        </Style>
+        
+        <Style x:Key="Labels" TargetType="TextBlock" BasedOn="{StaticResource TextBlocks}">
+            <Setter Property="Grid.Column" Value="1"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+
+        <Style x:Key="Edits" TargetType="TextBox" BasedOn="{StaticResource TextBlocks}">
+            <Setter Property="Grid.Column" Value="2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        </Style>
+
+        <Style x:Key="Watermarks" TargetType="TextBlock" BasedOn="{StaticResource TextBlocks}">
+            <Setter Property="Grid.Column" Value="2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="Margin" Value="10,2"/>
+            <Setter Property="IsHitTestVisible" Value="False"/>
+            <Setter Property="Foreground" Value="DarkGray"/>
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Path=Text}" Value=""/>
+                        <Condition Binding="{Binding Path=IsKeyboardFocused}" Value="False"/>
+                    </MultiDataTrigger.Conditions>
+                    <MultiDataTrigger.Setters>
+                        <Setter Property="Visibility" Value="Visible"/>
+                    </MultiDataTrigger.Setters>
+                </MultiDataTrigger>
+            </Style.Triggers>
+            
+        </Style>
+        
+        <Style x:Key="BrowseBtn" TargetType="Button" BasedOn="{StaticResource TextBlocks}">
+            <Setter Property="Grid.Column" Value="3"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="Content" Value="..."/>
+            <Setter Property="Command" Value="{Binding Path=BrowseCommand}"/>
+            <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Tag}"/>
+        </Style>
+
+        <Style x:Key="MergeButton" TargetType="Button" BasedOn="{StaticResource TextBlocks}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsMerging}" Value="true">
+                    <Setter Property="IsEnabled" Value="False"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
+    </Window.Resources>
+    <Grid DataContext="{Binding Source={StaticResource viewModel}}">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="340*"/>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="30"/>
+        </Grid.ColumnDefinitions>
+        
+        <TextBlock Text="O" Style="{StaticResource Labels}" Grid.Row="1"/>
+        <TextBlock Text="A" Style="{StaticResource Labels}" Grid.Row="2"/>
+        <TextBlock Text="B" Style="{StaticResource Labels}" Grid.Row="3"/>
+        <TextBlock Text="C" Style="{StaticResource Labels}" Grid.Row="4"/>
+
+        <TextBox Text="{Binding Path=OfileName}" Style="{StaticResource Edits}" Grid.Row="1" x:Name="w1"/>
+        <TextBox Text="{Binding Path=AfileName}" Style="{StaticResource Edits}" Grid.Row="2" x:Name="w2"/>
+        <TextBox Text="{Binding Path=BfileName}" Style="{StaticResource Edits}" Grid.Row="3" x:Name="w3"/>
+        <TextBox Text="{Binding Path=CfileName}" Style="{StaticResource Edits}" Grid.Row="4" x:Name="w4"/>
+        
+        <TextBlock Text="Имя исходного файла" Style="{StaticResource Watermarks}" Grid.Row="1" DataContext="{Binding ElementName=w1}"/>
+        <TextBlock Text="Имя файла версии A" Style="{StaticResource Watermarks}" Grid.Row="2" DataContext="{Binding ElementName=w2}"/>
+        <TextBlock Text="Имя файла версии B" Style="{StaticResource Watermarks}" Grid.Row="3" DataContext="{Binding ElementName=w3}"/>
+        <TextBlock Text="Имя файла для результата слияния" Style="{StaticResource Watermarks}" Grid.Row="4" DataContext="{Binding ElementName=w4}"/>
+        
+        <Button Style="{StaticResource BrowseBtn}" Grid.Row="1" Tag="O"/>
+        <Button Style="{StaticResource BrowseBtn}" Grid.Row="2" Tag="A"/>
+        <Button Style="{StaticResource BrowseBtn}" Grid.Row="3" Tag="B"/>
+        <Button Style="{StaticResource BrowseBtn}" Grid.Row="4" Tag="C"/>
+
+        <CheckBox Content="Перезаписать" IsChecked="{Binding Path=RewriteResult}" Style="{StaticResource TextBlocks}"  Grid.Column="2" Grid.Row="5" VerticalContentAlignment="Center"/>
+        <Button Content="{Binding Path=StatusName}" Command="{Binding Path=MergeCommand}"  Grid.Column="2" Grid.Row="7" Style="{StaticResource MergeButton}"/>
+        
+        <Rectangle VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="0,2" Width="20" IsHitTestVisible="False" Fill="Coral" Grid.Row="1"  Grid.RowSpan="5"/>
+    </Grid>
+</Window>
