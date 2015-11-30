@@ -130,12 +130,12 @@ namespace vmx.Model
                 if (a != 0 && b != 0)
                 {
 
-                    for (int i = LA + 1; i < a; i++)
+                    for (int i = LA + 1; i < a && !isAchanged; i++)
                     {
                         isAchanged = isAchanged || AO[i] == 0;
                     }
 
-                    for (int i = LB + 1; i < b; i++)
+                    for (int i = LB + 1; i < b && !isBchanged; i++)
                     {
                         isBchanged = isBchanged || BO[i] == 0;
                     }
